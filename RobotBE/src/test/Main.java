@@ -17,6 +17,8 @@ public class Main {
 		 int cpt = 0;
 		 boolean droite = false;
 		 boolean gauche = false;
+		 boolean perduD = false;
+		 boolean perduG = false;
 		 
 		 LightSensor light = new LightSensor(SensorPort.S1);
 		 Calibre cal = new Calibre(0, 50);
@@ -35,25 +37,29 @@ public class Main {
 			System.out.println("" + curr);
 			
 			if(cal.estBon(curr)) {
+				perduD = false;
+				perduG = false;
 				// on est tjrs centré sur la ligne
 				cpt = (cpt+1)%2;
 				moteur.setSpeed(speed);
 				moteur.avancer();
 				
 				if(cpt == 0) {
+					droite = false;
 					bras.tournerAGauche();
 				    gauche = cal.estBon(light.getNormalizedLightValue());
 				    LCD.clear();
 					LCD.drawString("" + gauche, 0, 0);
 				}
 				else {
+					gauche = false;
 					bras.tournerADroite();
 					droite = cal.estBon(light.getNormalizedLightValue());
 					LCD.clear();
 					LCD.drawString("" + droite, 0, 0);
 				}
 				
-				if(droite || gauche) {
+				if(droite && gauche) {
 					//signalisation
 					moteur.arreter();
 					break;
@@ -61,18 +67,29 @@ public class Main {
 				bras.centrer();
 			}
 			else if (!cal.estBon(curr)) {
-				// est perdu
-				moteur.arreter();
-				// balayage
-				if(bras.balayerAGauche(cal)) {
+				if(perduD) {
 					moteur.tournerAGauche();
-				}	
-				else if(bras.balayerADroite(cal)) {
+				}
+				else if(perduG) {
 					moteur.tournerADroite();
 				}
 				else {
-					//totalement perdu
-					//moteur.reculer();
+					// est perdu
+					moteur.arreter();
+					// balayage
+					if(bras.balayerAGauche(cal)) {
+						perduD = true;
+					}	
+					else if(bras.balayerADroite(cal)) {
+						perduG = true;
+					}
+					else {
+						//totalement perdu
+						if(droite)
+							perduD = true;
+						else
+							perduG = true;
+					}
 				}
 			}
 			Thread.sleep(10); 

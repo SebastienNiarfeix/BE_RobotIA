@@ -25,15 +25,19 @@ public class Roues implements Moteur{
 	}
 	
 	public void tournerAGauche() {
-		Motor.B.setSpeed(Motor.B.getSpeed() - 100);
-		Motor.B.forward();
+		Motor.B.backward();
+		//Motor.B.setSpeed(Motor.B.getSpeed() - 150);
+		//Motor.B.forward();
+		//Motor.B.stop();
 		Motor.C.forward();
 	}
 	
 	public void tournerADroite() {
-		Motor.B.setSpeed(Motor.B.getSpeed() - 100);
+		Motor.C.backward();
+		//Motor.C.setSpeed(Motor.C.getSpeed() - 150);
+		//Motor.C.forward();
+		//Motor.C.stop();
 		Motor.B.forward();
-		Motor.C.forward();
 	}
 
 	@Override
