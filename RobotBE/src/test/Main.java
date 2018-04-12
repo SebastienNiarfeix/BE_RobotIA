@@ -14,10 +14,9 @@ public class Main {
 		 
 		 LCD.clear();
 		 int speed = 250;
+		 int cpt = 0;
 		 boolean droite = false;
 		 boolean gauche = false;
-		 boolean cumDroite = false;
-		 boolean cumGauche = false;
 		 
 		 LightSensor light = new LightSensor(SensorPort.S1);
 		 Calibre cal = new Calibre(0, 50);
@@ -37,28 +36,24 @@ public class Main {
 			
 			if(cal.estBon(curr)) {
 				// on est tjrs centré sur la ligne
-				if(cumDroite && cumGauche) {
-					cumDroite = false;
-					cumGauche = false;
-				}
+				cpt = (cpt+1)%2;
 				moteur.setSpeed(speed);
 				moteur.avancer();
-		
-				bras.tournerAGauche();
-			    gauche = cal.estBon(light.getNormalizedLightValue());
-			    cumGauche = gauche || cumGauche;
-			    
-				LCD.clear();
-				LCD.drawString("" + gauche, 0, 0);
 				
-				bras.tournerADroite();
-				droite = cal.estBon(light.getNormalizedLightValue());
-				cumDroite = droite || cumDroite;
+				if(cpt == 0) {
+					bras.tournerAGauche();
+				    gauche = cal.estBon(light.getNormalizedLightValue());
+				    LCD.clear();
+					LCD.drawString("" + gauche, 0, 0);
+				}
+				else {
+					bras.tournerADroite();
+					droite = cal.estBon(light.getNormalizedLightValue());
+					LCD.clear();
+					LCD.drawString("" + droite, 0, 0);
+				}
 				
-				LCD.clear();
-				LCD.drawString("" + droite, 0, 0);
-				
-				if(droite && gauche) {
+				if(droite || gauche) {
 					//signalisation
 					moteur.arreter();
 					break;

@@ -8,10 +8,10 @@ public class Rotation {
 		while(Button.readButtons()!= Button.ID_ESCAPE) {
 			Button.waitForAnyPress();
 			if(Button.readButtons() == Button.ID_RIGHT) {
-				Motor.A.rotateTo(80, true);
+				Motor.A.rotateTo(20, true);
 			}
 			else if(Button.readButtons() == Button.ID_LEFT) {
-				Motor.A.rotateTo(-80, true);
+				Motor.A.rotateTo(-20, true);
 			}
 		}
 	}
