@@ -45,14 +45,14 @@ public class Main {
 				moteur.avancer();
 				
 				if(cpt == 0) {
-					droite = false;
+					//droite = false;
 					bras.tournerAGauche();
 				    gauche = cal.estBon(light.getNormalizedLightValue());
 				    LCD.clear();
 					LCD.drawString("" + gauche, 0, 0);
 				}
 				else {
-					gauche = false;
+					//gauche = false;
 					bras.tournerADroite();
 					droite = cal.estBon(light.getNormalizedLightValue());
 					LCD.clear();
@@ -74,9 +74,7 @@ public class Main {
 					moteur.tournerADroite();
 				}
 				else {
-					// est perdu
-					moteur.arreter();
-					// balayage
+					// perdu
 					if(bras.balayerAGauche(cal)) {
 						perduD = true;
 					}	
@@ -87,8 +85,11 @@ public class Main {
 						//totalement perdu
 						if(droite)
 							perduD = true;
-						else
+						else if(gauche)
 							perduG = true;
+						else { 
+							moteur.reculer();
+						}
 					}
 				}
 			}
