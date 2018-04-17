@@ -19,13 +19,13 @@ public class Bras implements Moteur{
 
 	@Override
 	public void tournerAGauche() {
-		Motor.A.rotateTo(60);
+		Motor.A.rotateTo(45);
 		
 	}
 
 	@Override
 	public void tournerADroite() {
-		Motor.A.rotateTo(-60);
+		Motor.A.rotateTo(-47);
 		
 	}
 	

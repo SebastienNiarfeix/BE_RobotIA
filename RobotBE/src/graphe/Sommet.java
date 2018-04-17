@@ -11,8 +11,8 @@ public class Sommet {
 		this.poids = poids;
 	}
 	
-	public void ajouterChemin(Arrete a) {
-		if(!this.intersections.contains(a)) 
+	public void ajouterIntersection(Arrete a) {
+		//if(!this.intersections.contains(a)) 
 			this.intersections.add(a);
 	}
 	
@@ -23,8 +23,12 @@ public class Sommet {
 	public int getPoids() {
 		return poids;
 	}
+	
+	public void setPoids(int poids) {
+		this.poids = poids;
+	}
 
-	public ArrayList<Arrete> getRoutes() {
+	public ArrayList<Arrete> getIntersection() {
 		return intersections;
 	}
 	
