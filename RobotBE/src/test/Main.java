@@ -6,6 +6,7 @@ import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
 import moteur.Bras;
 import moteur.Roues;
+import robot.Robot;
 import sensor.Calibre;
 
 public class Main {
@@ -13,58 +14,46 @@ public class Main {
 	 public static void main(String[] args) throws Exception{
 		 
 		 LCD.clear();
-		 int speed = 250;
-		 int cpt = 0;
-		 boolean droite = false;
-		 boolean gauche = false;
 		 boolean perduD = false;
 		 boolean perduG = false;
+		 boolean sommet = true;
 		 
 		 LightSensor light = new LightSensor(SensorPort.S1);
 		 Calibre cal = new Calibre(0, 50);
 		 cal.calibration(light);
-
 		 Roues moteur = new Roues();
 		 Bras bras = new Bras(light);
-		
-		 moteur.setSpeed(speed);
-		 bras.setSpeed(600);
+		 Robot r2d2 = new Robot(moteur, bras, cal, 200);
 		 
 		 while(Button.readButtons()!= Button.ID_ESCAPE) {
 			
-			LCD.clear();
 			int curr = light.getNormalizedLightValue();
-			System.out.println("" + curr);
+			//System.out.println("" + curr);
 			
 			if(cal.estBon(curr)) {
 				perduD = false;
 				perduG = false;
 				// on est tjrs centré sur la ligne
-				cpt = (cpt+1)%2;
-				moteur.setSpeed(speed);
-				moteur.avancer();
-				
-				if(cpt == 0) {
-					//droite = false;
-					bras.tournerAGauche();
-				    gauche = cal.estBon(light.getNormalizedLightValue());
-				    LCD.clear();
-					LCD.drawString("" + gauche, 0, 0);
+				if(!sommet) {
+					r2d2.suivreLigne();
 				}
 				else {
-					//gauche = false;
-					bras.tournerADroite();
-					droite = cal.estBon(light.getNormalizedLightValue());
-					LCD.clear();
-					LCD.drawString("" + droite, 0, 0);
-				}
-				
-				if(droite && gauche) {
-					//signalisation
-					moteur.arreter();
-					break;
-				}
-				bras.centrer();
+					if(r2d2.chercherSignalisation()) {
+						moteur.avancer();
+						Thread.sleep(1500);
+						if(r2d2.chercherSignalisation()) {
+							//deux lignes
+							LCD.drawString("RENCONTRE", 0, 0);
+							sommet = false;
+							//traitement 
+						}
+						else {
+							//traitement 
+							LCD.drawString("INTERSECTION", 0, 0);
+							sommet = false;
+						}
+					}
+				}				
 			}
 			else if (!cal.estBon(curr)) {
 				if(perduD) {
@@ -83,13 +72,7 @@ public class Main {
 					}
 					else {
 						//totalement perdu
-						if(droite)
-							perduD = true;
-						else if(gauche)
-							perduG = true;
-						else { 
-							moteur.reculer();
-						}
+						moteur.reculer();
 					}
 				}
 			}

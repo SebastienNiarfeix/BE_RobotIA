@@ -2,8 +2,10 @@ package moteur;
 
 import lejos.nxt.Motor;
 
+
 public class Roues implements Moteur{
 	
+
 	public void setSpeed(int val) {
 		Motor.B.setSpeed(val);
 		Motor.C.setSpeed(val);
@@ -15,8 +17,8 @@ public class Roues implements Moteur{
 	}
 	
 	public void avancer(int speed) {
-		setSpeed(speed);
-		avancer();
+		this.setSpeed(speed);
+		this.avancer();
 	}
 	
 	public void reculer() {
@@ -42,8 +44,8 @@ public class Roues implements Moteur{
 
 	@Override
 	public void arreter() {
-		Motor.B.stop();
-		Motor.C.stop();		
+		Motor.C.stop();
+		Motor.B.stop();		
 	}
 
 }

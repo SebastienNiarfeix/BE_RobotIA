@@ -38,6 +38,7 @@ public class Calibre {
 			Thread.sleep(100);
 		 }
 		 this.val = calibrate;
+		 LCD.clear();
 	 }
 	
 	public boolean estBon(int n) {

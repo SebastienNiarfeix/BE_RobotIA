@@ -5,19 +5,19 @@ import java.util.ArrayList;
 public class Sommet {
 
 	private int poids;
-	private ArrayList<Arrete> routes;
+	private ArrayList<Arrete> intersections;
 	
 	public Sommet(int poids) {
 		this.poids = poids;
 	}
 	
 	public void ajouterChemin(Arrete a) {
-		if(!this.routes.contains(a)) 
-			this.routes.add(a);
+		if(!this.intersections.contains(a)) 
+			this.intersections.add(a);
 	}
 	
 	public int getDegres() {
-		return this.routes.size();
+		return this.intersections.size();
 	}
 
 	public int getPoids() {
@@ -25,7 +25,7 @@ public class Sommet {
 	}
 
 	public ArrayList<Arrete> getRoutes() {
-		return routes;
+		return intersections;
 	}
 	
 }
