@@ -1,5 +1,6 @@
 package robot;
 
+import graphe.Sommet;
 import moteur.Bras;
 import moteur.Roues;
 import sensor.Calibre;
@@ -10,6 +11,7 @@ public class Robot {
 	private Bras bras;
 	private Calibre cal;
 	private int speed;
+	private float distCible = 0;
 	private boolean perduD = false;
 	private boolean perduG = false;
 	
@@ -20,6 +22,14 @@ public class Robot {
 		this.speed = speed;
 		this.moteur.setSpeed(speed);
 		this.bras.setSpeed(600);
+	}
+
+	public float getDistCible() {
+		return distCible;
+	}
+
+	public void setDistCible(float distCible) {
+		this.distCible = distCible;
 	}
 
 	public void setPerduD(boolean perduD) {
@@ -35,19 +45,10 @@ public class Robot {
 		moteur.avancer();
 	}
 	
-	public boolean chercherSignalisation() {
-		moteur.setSpeed(50);
+	public boolean chercherSignalisation() throws InterruptedException {
+		moteur.setSpeed(2);
 		moteur.avancer();
-		bras.tournerADroite();
-		boolean droite = bras.getMesure(cal);
-		boolean gauche = false;
-		if(droite) {
-			moteur.arreter();
-			bras.tournerAGauche();
-			gauche = bras.getMesure(cal);
-		}
-		bras.centrer();
-		return gauche && droite;
+		return bras.voirSignalisation(moteur.getPilot(), cal);
 	}
 	
 	public void revenirSurLigne() throws InterruptedException {
@@ -59,6 +60,7 @@ public class Robot {
 		}
 		else {
 			// perdu
+			moteur.arreter();
 			if(bras.balayerAGauche(cal)) {
 				setPerduD(true);
 			}	
@@ -73,30 +75,45 @@ public class Robot {
 	}
 	
 	public void croissementAGauche() throws InterruptedException {
-		moteur.setSpeed(50);
-		moteur.avancer();
+		moteur.setSpeed(speed);
+		moteur.arc(1);
+		moteur.setSpeed(2);
+		moteur.reculer();
 		do {
-			bras.tournerAGauche();
+			bras.tournerAGauche(90);
 			Thread.sleep(10);
 		}while(!bras.getMesure(cal));
 		bras.centrer();
-		moteur.tournerAGauche();
+		moteur.reculer();
+		Thread.sleep(100);
 	}
 	
-	public void croissementAuMilieu() {
-		
+	public void croissementADroite() throws InterruptedException {
+		moteur.setSpeed(speed);
+		moteur.arc(0);
+		moteur.setSpeed(2);
+		moteur.reculer();
+		do {
+			bras.tournerADroite(90);
+			Thread.sleep(10);
+		}while(!bras.getMesure(cal));
+		bras.centrer();
+		moteur.reculer();
+		Thread.sleep(100);
 	}
 	
-	public void IntersectionAGauche() {
-		
+	
+	
+	public void afficherDistance() {
+		moteur.afficher();
 	}
 	
-	public void IntersectionADroite() {
-		
+	public boolean estSurSommet() {
+		return distCible > moteur.getDistance();
 	}
-	
-	public void IntersectionToutDroit() {
-		
+
+	public boolean arrive(Sommet s) {
+		return s.getBut() && (s.getPoids() < moteur.getDistance());
 	}
 
 }

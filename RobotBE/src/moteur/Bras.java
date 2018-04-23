@@ -2,6 +2,7 @@ package moteur;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
+import lejos.robotics.navigation.DifferentialPilot;
 import sensor.Calibre;
 
 public class Bras implements Moteur{
@@ -14,7 +15,7 @@ public class Bras implements Moteur{
 
 	@Override
 	public void setSpeed(int val) {
-		Motor.B.setSpeed(val);
+		Motor.A.setSpeed(val);
 	}
 
 	@Override
@@ -22,10 +23,20 @@ public class Bras implements Moteur{
 		Motor.A.rotateTo(45);
 		
 	}
+	
+	public void tournerAGauche(int deg) {
+		Motor.A.rotateTo(deg);
+		
+	}
 
 	@Override
 	public void tournerADroite() {
 		Motor.A.rotateTo(-47);
+		
+	}
+	
+	public void tournerADroite(int deg) {
+		Motor.A.rotateTo(-deg);
 		
 	}
 	
@@ -42,9 +53,33 @@ public class Bras implements Moteur{
 		return cal.estBon(light.getNormalizedLightValue());
 	}
 	
+	public boolean voirSignalisation(DifferentialPilot p, Calibre cal) throws InterruptedException {
+		boolean a_gauche = false;
+		Motor.A.rotateTo(90, true);
+		while(!a_gauche && Motor.A.isMoving()) {
+			a_gauche = !getMesure(cal);
+			Thread.sleep(10);
+		}
+		a_gauche = balayerAGauche(cal);
+		this.centrer();
+		boolean a_droite = false;
+		if(a_gauche){
+			//System.out.println("G?EIKr?GIEF");
+			p.stop();
+			Motor.A.rotateTo(-90, true);
+			while(!a_droite && Motor.A.isMoving()) {
+				a_droite = !getMesure(cal);
+				Thread.sleep(10);
+			}
+			a_droite = balayerADroite(cal);
+		}
+		return a_droite && a_gauche;
+	}
+	
+	
 	public boolean balayerAGauche(Calibre cal) throws InterruptedException {
 		boolean a_gauche = false;
-		Motor.A.rotateTo(80, true);
+		Motor.A.rotateTo(90, true);
 		while(!a_gauche && Motor.A.isMoving()) {
 			a_gauche = getMesure(cal);
 			Thread.sleep(10);
@@ -55,7 +90,7 @@ public class Bras implements Moteur{
 	
 	public boolean balayerADroite(Calibre cal) throws InterruptedException {
 		boolean a_droite = false;
-		Motor.A.rotateTo(-80, true);
+		Motor.A.rotateTo(-90, true);
 		while(!a_droite && Motor.A.isMoving()) {
 			a_droite = getMesure(cal);
 			Thread.sleep(10);

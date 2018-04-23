@@ -1,51 +1,76 @@
 package moteur;
 
+import lejos.nxt.LCD;
 import lejos.nxt.Motor;
+import lejos.robotics.navigation.DifferentialPilot;
 
 
 public class Roues implements Moteur{
 	
+	private DifferentialPilot pilot = new DifferentialPilot(5.6f, 14.5f, Motor.B, Motor.C); 
+	private float distance = 0;
+	
+	public Roues() {
+		pilot.setRotateSpeed(100);
+	}
+
+	public DifferentialPilot getPilot() {
+		return pilot;
+	}
 
 	public void setSpeed(int val) {
-		Motor.B.setSpeed(val);
-		Motor.C.setSpeed(val);
+		pilot.setTravelSpeed(val);
 	}
 	
 	public void avancer() {
-		Motor.C.forward();
-		Motor.B.forward();
+		this.distance += pilot.getMovement().getDistanceTraveled();
+		pilot.travel(80, true);
 	}
 	
-	public void avancer(int speed) {
-		this.setSpeed(speed);
-		this.avancer();
+	public void avancer(int d) {
+		pilot.travel(d);
+	}
+	
+	public void voyager(int distance) {
+		pilot.travel(distance, true);
 	}
 	
 	public void reculer() {
-		Motor.C.backward();
-		Motor.B.backward();
+		pilot.travel(-80, true);
 	}
 	
 	public void tournerAGauche() {
-		Motor.B.backward();
-		//Motor.B.setSpeed(Motor.B.getSpeed() - 150);
-		//Motor.B.forward();
-		//Motor.B.stop();
-		Motor.C.forward();
+		pilot.rotateLeft();
 	}
 	
 	public void tournerADroite() {
-		Motor.C.backward();
-		//Motor.C.setSpeed(Motor.C.getSpeed() - 150);
-		//Motor.C.forward();
-		//Motor.C.stop();
-		Motor.B.forward();
+		pilot.rotateRight();
+	}
+	
+	public void arc(int dir) {
+		if(dir == 0)
+			pilot.arc(-15, -90);
+		else
+			pilot.arc(15, 90);
 	}
 
 	@Override
 	public void arreter() {
-		Motor.C.stop();
-		Motor.B.stop();		
+		pilot.setAcceleration((int) (999)); 
+		pilot.stop();	
+		
+	}
+	
+	public void setDistance(float dist) {
+		this.distance = dist;
+	}
+	
+	public float getDistance() {
+		return distance;
+	}
+	
+	public void afficher() {
+		LCD.drawString("" + distance, 0, 4);
 	}
 
 }

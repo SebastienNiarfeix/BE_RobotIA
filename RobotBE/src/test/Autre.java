@@ -1,26 +1,23 @@
 package test;
 
 import lejos.nxt.*;
+import lejos.robotics.navigation.DifferentialPilot;
 
 public class Autre {
-	public static void main(String[] args){
-		 LCD.drawString("Program 2", 0, 0);
+	public static void main(String[] args) throws InterruptedException{
+		 LCD.drawString("O", 0, 0);
+		 float d = 0;
 	     Button.waitForAnyPress();
-	     LCD.clear();
-	     int speed = 60;
-	     Motor.B.setSpeed(speed);
-	     Motor.C.setSpeed(speed);
-	     Sound.beep();
-	     Motor.B.forward();
-	     Motor.C.forward();
-	     LCD.drawString("FORWARD AT " + Motor.B.getSpeed(),0,0);
+	     DifferentialPilot pilot = new DifferentialPilot(5.6f, 14.5f, Motor.B, Motor.C, false);
+	     pilot.setTravelSpeed(20);
+	     pilot.travel(20, true);
+	     while(pilot.isMoving()) {
+	    	 d += pilot.getMovement().getDistanceTraveled();
+	    	 pilot.travel(20, true);
+	    	 LCD.clear();
+	    	 LCD.drawString("" + d, 0, 0);
+	    	 Thread.sleep(100);
+	     }
 	     Button.waitForAnyPress();
-	     LCD.drawString("BACKWARD AT " + Motor.B.getSpeed(),0,0);
-	     Sound.twoBeeps();
-	     Motor.B.backward();
-	     Motor.C.backward();
-	     Button.waitForAnyPress();
-	     Motor.B.stop();     
-	     Motor.C.stop();
 	  }
 }

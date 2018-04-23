@@ -1,14 +1,20 @@
 package test;
 
-import lejos.nxt.*;
+import java.util.ArrayList;
+
+import graphe.Graphe;
+import graphe.Sommet;
+import lejos.nxt.Button;
 
 
 public class Music {
-	public static void main(String[] args) throws InterruptedException{
-		 LightSensor light = new LightSensor(SensorPort.S1);
-		 while(Button.readButtons()!= Button.ID_ENTER) {
-			 LCD.drawString(""+ light.readValue(),0,0);
-			 Thread.sleep(20);
+	public static void main(String[] args) throws InterruptedException {
+		 Button.waitForAnyPress();
+		 Graphe g = new Graphe();
+		 ArrayList<Sommet> maListe = g.getListe();
+		 for(int i = 0; i < maListe.size(); i++) {
+			 System.out.println(maListe.get(i));
+			 Button.waitForAnyPress();
 		 }
 	}
 }
