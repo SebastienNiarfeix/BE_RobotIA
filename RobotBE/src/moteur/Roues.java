@@ -40,10 +40,12 @@ public class Roues implements Moteur{
 	}
 	
 	public void tournerAGauche() {
+		this.distance += pilot.getMovement().getDistanceTraveled();
 		pilot.rotateLeft();
 	}
 	
 	public void tournerADroite() {
+		this.distance += pilot.getMovement().getDistanceTraveled();
 		pilot.rotateRight();
 	}
 	
@@ -53,10 +55,14 @@ public class Roues implements Moteur{
 		else
 			pilot.arc(15, 90);
 	}
-
+	
+	public void demisTour() {
+		pilot.rotate(180);
+	}
+	
 	@Override
 	public void arreter() {
-		pilot.setAcceleration((int) (999)); 
+		pilot.setAcceleration((int) (9999)); 
 		pilot.stop();	
 		
 	}

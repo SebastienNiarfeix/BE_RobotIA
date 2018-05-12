@@ -60,7 +60,7 @@ public class Robot {
 		}
 		else {
 			// perdu
-			moteur.arreter();
+			moteur.setSpeed(3);;
 			if(bras.balayerAGauche(cal)) {
 				setPerduD(true);
 			}	
@@ -102,7 +102,13 @@ public class Robot {
 		Thread.sleep(100);
 	}
 	
-	
+	public void passingPlaceGauche() throws InterruptedException {
+		do {
+			bras.tournerAGauche(90);
+			Thread.sleep(10);
+		}while(!bras.getMesure(cal));
+		bras.centrer();
+	}
 	
 	public void afficherDistance() {
 		moteur.afficher();
@@ -113,7 +119,11 @@ public class Robot {
 	}
 
 	public boolean arrive(Sommet s) {
-		return s.getBut() && (s.getPoids() < moteur.getDistance());
+		return s.getBut() && (s.getPoids()/2 < moteur.getDistance());
+	}
+
+	public void demisTour() throws InterruptedException {
+		moteur.demisTour();
 	}
 
 }

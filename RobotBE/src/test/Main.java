@@ -1,6 +1,9 @@
 package test;
 
-import graphe.Couple;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+import graphe.Dijkstra;
 import graphe.Direction;
 import graphe.Graphe;
 import graphe.Sommet;
@@ -19,29 +22,51 @@ public class Main {
 		 
 		 LCD.clear();
 		 boolean inter = false;
-		 int cpt = 0;
 
 		 LightSensor light = new LightSensor(SensorPort.S1);
 		 Calibre cal = new Calibre(0, 100);
 		 cal.calibration(light);
 		 Roues moteur = new Roues();
 		 Bras bras = new Bras(light);
-		 Robot r2d2 = new Robot(moteur, bras, cal, 20);
+		 Robot r2d2 = new Robot(moteur, bras, cal, 30);
 		 Graphe g = new Graphe();
 		 
-		 Couple parcours[] = new Couple[4];
-		 parcours[0] = new Couple(Direction.DROITE, g.getListe().get(2));
-		 parcours[1] = new Couple(Direction.GAUCHE, g.getListe().get(3));
-		 parcours[2] = new Couple(Direction.DROITE, g.getListe().get(5));
-		 parcours[3] = new Couple(Direction.TOUT_DROIT, g.getListe().get(0));
+		 int cpt = 0;
+		 int[] liste = {4, 9, 1, 9};
 		 
-		 Sommet s_curr = g.getListe().get(0); // sommet depart
-		// g.getListe().get(3).setbut(true); //sommet arrivé
+		 Sommet s_curr = g.getListe().get(0); // sommet départ
+		 Dijkstra dj = new Dijkstra(g, s_curr);
+		 Sommet s_arr = g.getListe().get(liste[cpt++]); // sommet arrivée
+		 LinkedList<Sommet> parcours = dj.getParcours(s_arr); 
+		 ListIterator<Sommet> it = parcours.listIterator(parcours.size()-1);
 		 
+		 r2d2.setDistCible(s_curr.getPoids()/2);
 		 
-		 r2d2.setDistCible(s_curr.getPoids());
-		 
-		 while(Button.readButtons()!= Button.ID_ESCAPE && !r2d2.arrive(s_curr)) {
+		 while(Button.readButtons()!= Button.ID_ESCAPE) {
+			 
+			if(r2d2.arrive(s_curr) && cpt == 4) {
+				break;	
+			}
+			else if(r2d2.arrive(s_curr)){
+				// X-ieme dijkstra
+				 moteur.arreter();
+				 Sommet s_avant_dernier = it.next();
+				 s_curr.setbut(false);
+				 s_curr = s_arr;
+				 s_arr = g.getListe().get(liste[cpt++]);
+				 dj = new Dijkstra(g, s_curr);
+				 parcours = dj.getParcours(s_arr); // sommet arrivée
+				 it = parcours.listIterator(parcours.size()-1);
+				 r2d2.setDistCible(s_curr.getPoids()/2 - 13);
+				 moteur.setDistance(0);
+				 LCD.drawString("SAUVETAGE", 0, 0);
+				 Thread.sleep(2000);
+				 LCD.clear();
+				 if(g.viensIntersect(it.previous(), s_avant_dernier)) {
+					 r2d2.demisTour();
+				 }
+				 it.next();
+			}
 			
 			int curr = light.getNormalizedLightValue();
 			//System.out.println("" + curr);
@@ -64,32 +89,43 @@ public class Main {
 						moteur.setDistance(0);
 						if(inter) {
 							moteur.avancer();
-							Thread.sleep(1000);
+							Thread.sleep(700);
 							LCD.clear();
+							Direction go = g.choix(s_curr, it.previous());
+							it.next();
 							if(r2d2.chercherSignalisation()) {
 								//deux lignes
-								LCD.drawString("CROISSEMENT", 0, 0);
-								//r2d2.croissementADroite();
-								r2d2.setDistCible(0);
-							}
-							else {
-								LCD.drawString("INTERSECTION", 0, 0);
-								//traitement 
-								if(parcours[cpt].getDir().equals(Direction.DROITE)) {
+								LCD.drawString("PASSING PLACE", 0, 0);
+								if(go.equals(Direction.DROITE)) {
 									r2d2.croissementADroite();
 									r2d2.setDistCible(0);
 								}
-								else if(parcours[cpt].getDir().equals(Direction.GAUCHE)){
+								else if(go.equals(Direction.GAUCHE)){
 									r2d2.croissementAGauche();
 									r2d2.setDistCible(0);
 								}
 								else {
-									r2d2.setDistCible(25);
+									r2d2.setDistCible(20);
+								}
+							}
+							else {
+								LCD.drawString("INTERSECTION", 0, 0);
+								//traitement 
+								if(go.equals(Direction.DROITE)) {
+									r2d2.croissementADroite();
+									r2d2.setDistCible(0);
+								}
+								else if(go.equals(Direction.GAUCHE)){
+									r2d2.croissementAGauche();
+									r2d2.setDistCible(0);
+								}
+								else {
+									r2d2.setDistCible(20);
 								}
 							}
 						}
 						else {
-							s_curr = parcours[cpt++].getCible();
+							s_curr = it.previous();
 							r2d2.setDistCible(s_curr.getPoids());
 						}
 					}

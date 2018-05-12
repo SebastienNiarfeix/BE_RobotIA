@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class Sommet {
 
 	private int poids;
+	private int num;
 	private boolean but = false;
 	private ArrayList<Arrete> intersections = new ArrayList<>();
 	
-	public Sommet(int poids, boolean but) {
+	public Sommet(int poids, int num, boolean but) {
 		this.poids = poids;
+		this.num = num;
 		this.but = but;
 	}
 	
@@ -22,21 +24,19 @@ public class Sommet {
 		return this.but;
 	}
 	
+	public int getNum() {
+		return this.num;
+	}
+	
 	public void setbut(boolean but) {
 		this.but = but;
-	}
-
-	@Override
-	public String toString() {
-		return "Sommet [but=" + but + ", intersections=" + intersections + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (but ? 1231 : 1237);
-		result = prime * result + ((intersections == null) ? 0 : intersections.hashCode());
+		result = prime * result + num;
 		result = prime * result + poids;
 		return result;
 	}
@@ -50,12 +50,7 @@ public class Sommet {
 		if (getClass() != obj.getClass())
 			return false;
 		Sommet other = (Sommet) obj;
-		if (but != other.but)
-			return false;
-		if (intersections == null) {
-			if (other.intersections != null)
-				return false;
-		} else if (!intersections.equals(other.intersections))
+		if (num != other.num)
 			return false;
 		if (poids != other.poids)
 			return false;

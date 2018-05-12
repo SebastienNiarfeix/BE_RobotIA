@@ -61,10 +61,6 @@ public class Arrete {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return "Arrete [s1=" + s1 + ", s2=" + s2 + ", dir=" + dir + "]";
-	}
 	
 	
 }
