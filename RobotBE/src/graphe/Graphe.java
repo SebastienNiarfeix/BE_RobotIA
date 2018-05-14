@@ -1,6 +1,9 @@
 package graphe;
 
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 public class Graphe {
@@ -111,6 +114,82 @@ public class Graphe {
 			}
 		}
 		return cible.equals(passe);
+	}
+	
+	
+	public int getLongueur(List<Sommet> p) {
+		int l = 0;
+		for(ListIterator<Sommet> it = p.listIterator(p.size()); it.hasPrevious();){
+			l += it.previous().getPoids();
+		}
+		return l - p.get(0).getPoids()/2;
+	}
+	
+	public List<Sommet> parcourir (Sommet depart, List<Sommet> victimes, List<Sommet> hopitaux) {
+		List<Sommet> parcours = new LinkedList<>();
+		if(victimes.isEmpty()) {
+			parcours.add(depart);
+			return parcours;
+		}
+		Graphe g = new Graphe();
+		int min = Integer.MAX_VALUE;
+		Dijkstra dj = new Dijkstra(g, depart);
+		List<Sommet> parcoursCheckMinimum = new LinkedList<>();
+		List<Sommet> parcoursList = new LinkedList<>();
+		List<Sommet> parcoursCheck = new LinkedList<>();
+		List<Sommet> parcoursFinal = new LinkedList<>();
+		List<Sommet> retour = new LinkedList<>();
+		List<Sommet> victimesSauvees = new LinkedList<>();
+		Sommet victime = null;
+		victimesSauvees.addAll(victimes);
+		for(int i =0; i<victimes.size(); i++) {
+			parcoursList = new LinkedList<>();
+			dj = new Dijkstra(g, depart);
+			parcours = dj.getParcours(victimes.get(i));
+			for(int j=0; j<victimes.size(); j++) {
+				if(!victimes.get(i).equals(victimes.get(j))){
+					parcoursCheckMinimum = new LinkedList<>();
+					dj = new Dijkstra(g, victimes.get(i));
+					parcoursCheck = dj.getParcours(victimes.get(j));
+					parcoursCheck.remove(victimes.get(i));
+					int longueur = this.getLongueur(parcoursCheck);
+					if(longueur < min) {
+						victime = victimes.get(i);
+						min = longueur;
+						parcoursCheckMinimum.addAll(parcoursCheck);		
+						//parcoursCheckMinimum.remove(victimes.get(i));
+					}
+				}
+			}
+			min = Integer.MAX_VALUE;
+			parcoursCheckMinimum.addAll(parcours);
+			int longueur = this.getLongueur(parcoursCheckMinimum);
+			if(longueur < min) {
+				min = longueur;
+				parcoursList.addAll(parcoursCheckMinimum);	
+				
+			}
+		}
+		victimesSauvees.remove(victime);
+		victimesSauvees.remove(parcoursList.get(0));
+		min = Integer.MAX_VALUE;
+		for(int k=0; k<hopitaux.size(); k++) {
+			dj = new Dijkstra(g, parcoursList.get(0));
+			parcours = dj.getParcours(hopitaux.get(k));
+			parcours.remove(parcoursList.get(0));
+			int longueur = this.getLongueur(parcours);
+			if(longueur < min) {
+				parcoursFinal = new LinkedList<>();
+				min = longueur;
+				parcoursFinal.addAll(parcours);
+				victime = hopitaux.get(k);
+			}
+		}
+		parcoursFinal.addAll(parcoursList);
+		parcoursFinal.remove(victime);
+		retour.addAll(this.parcourir(victime, victimesSauvees, hopitaux));
+		retour.addAll(parcoursFinal);
+		return retour;
 	}
 	
 }
