@@ -37,7 +37,6 @@ public class Calibre {
 			LCD.drawString("Val curr = " + calibrate, 0, 0);
 			Thread.sleep(100);
 		 }
-		 System.out.println("BLABLABLA");
 		 Button.waitForAnyPress();
 		 this.val = calibrate;
 		 //LCD.clear();

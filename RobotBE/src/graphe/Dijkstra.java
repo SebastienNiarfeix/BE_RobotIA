@@ -3,7 +3,6 @@ package graphe;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class Dijkstra {
 
@@ -84,7 +83,7 @@ public class Dijkstra {
 	
 	public LinkedList<Sommet> getParcours(Sommet but){
 		Sommet curr = but;		
-		curr.setbut(true);
+		//curr.setbut(true);
 		while(this.sdeb.getNum() != curr.getNum()) {
 			parcours.add(curr);
 			curr = pred[curr.getNum()];
@@ -95,43 +94,18 @@ public class Dijkstra {
 	
 	public static void main(String[]args){
 		Graphe g = new Graphe();
-		Dijkstra dj= new Dijkstra(g, g.getListe().get(0));
-        //System.out.println(dj.getParcours(g.getListe().get(5)));
+		List<Sommet> victimes = new LinkedList<>();
+		List<Sommet> hopitaux = new LinkedList<>();
+		List<Sommet> parcours = new LinkedList<>();
+		victimes.add(g.getListe().get(1));
+		victimes.add(g.getListe().get(7));
+		victimes.add(g.getListe().get(9));
+		hopitaux.add(g.getListe().get(0));
+		hopitaux.add(g.getListe().get(10));
+		parcours = g.parcourir(g.getListe().get(0), victimes, hopitaux); 
 		
-        List<Sommet> parcours = dj.getParcours(g.getListe().get(4));
-        ListIterator<Sommet> it = parcours.listIterator(parcours.size());
-        for(; it.hasPrevious();){
-        	it.previous();it.next();
-        	System.out.print(it.previous().getNum()+ " ");
-        }
-        it.next();
-        Sommet s_avant_dernier = it.next();
-        System.out.println("--"+s_avant_dernier.getNum());
-        
-        dj = new Dijkstra(g, g.getListe().get(4));
-        parcours = dj.getParcours(g.getListe().get(9));
-        it = parcours.listIterator(parcours.size());
-        System.out.println(g.viensIntersect(it.previous(), s_avant_dernier));
-        it.next();
-        for(; it.hasPrevious();){
-        	it.previous();it.next();
-        	System.out.print(it.previous().getNum()+ " ");
-        }
-        it.next();
-        s_avant_dernier = it.next();
-        System.out.println("--" + s_avant_dernier.getNum());
-        
-        
-        dj = new Dijkstra(g, g.getListe().get(9));
-        parcours = dj.getParcours(g.getListe().get(1));
-        it = parcours.listIterator(parcours.size());
-        System.out.println(g.viensIntersect(it.previous(), s_avant_dernier));
-        it.next();
-        for(; it.hasPrevious();){
-        	it.previous();it.next();
-        	System.out.print(it.previous().getNum()+ " ");
-        }
-        s_avant_dernier = it.next();
+		for(Sommet s : parcours)
+			System.out.println(s.getNum());
    
 	}
 }
